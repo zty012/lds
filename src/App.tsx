@@ -1,52 +1,19 @@
 import students from "./data/students.json";
 import React from "react";
 import clsx from "clsx";
-import { choose } from "./random";
+import { useWish } from "./wish";
+import { getVersion } from "@tauri-apps/api/app";
 
 export default function App() {
-  const [running, setRunning] = React.useState(false);
-  const [intervalId, setIntervalId] = React.useState<number>();
-  const [weights, setWeights] = React.useState(
-    students.map((s) => ({ value: s, weight: 1 })),
-  );
-  const [selected, setSelected] = React.useState<string>("");
-  // 抽卡次数
-  const [count, setCount] = React.useState(0);
   const [showDebug, setShowDebug] = React.useState(false);
+  const wish = useWish(students);
+  const [version, setVersion] = React.useState("");
 
   React.useEffect(() => {
-    console.log(intervalId);
-    if (running) {
-      setIntervalId(
-        setInterval(() => {
-          setSelected(choose(weights));
-        }, 1),
-      );
-    } else if (intervalId) {
-      clearInterval(intervalId);
-      setCount(count + 1);
-      // 保底机制，如果抽数==10,则选中概率最低的学生
-      if (count === 10) {
-        setSelected(weights.sort((a, b) => a.weight - b.weight)[0].value);
-        setCount(0);
-      }
-      // 给选中的学生降低概率
-      const newWeights = weights.map((w) =>
-        w.value === selected ? { ...w, weight: w.weight * 0.5 } : w,
-      );
-      setWeights(newWeights);
-      // 如果所有学生的概率都是0,则重置概率
-      if (newWeights.every((w) => w.weight === 0)) {
-        setWeights(students.map((s) => ({ value: s, weight: 1 })));
-      }
-    }
-  }, [running]);
-
-  React.useEffect(() => {
-    // 按F3显示调试信息
+    getVersion().then((v) => setVersion(v));
     const handleKeyDown = (event: KeyboardEvent) => {
       console.log(event.key);
-      if (event.key === "F2") {
+      if (event.key === "Delete") {
         setShowDebug((v) => !v);
       }
     };
@@ -62,23 +29,57 @@ export default function App() {
       className={clsx(
         "flex h-screen select-none flex-col items-center justify-center overflow-hidden bg-black pb-20 text-white transition",
         {
-          "bg-neutral-900": running,
+          "bg-neutral-900": wish.running,
         },
       )}
-      onClick={() => setRunning(!running)}
+      onClick={() => {
+        if (wish.running) {
+          wish.stop();
+        } else {
+          wish.start();
+        }
+      }}
     >
-      <div className="flex flex-col overflow-hidden text-center text-7xl font-bold">
-        {selected}
+      <div className="container flex flex-wrap items-center justify-center gap-8 overflow-hidden text-center text-7xl font-bold">
+        {wish.values.map((v, i) => (
+          <span key={i}>{v}</span>
+        ))}
       </div>
       {showDebug && (
-        <div className="fixed bottom-0 right-0 top-0 max-h-screen overflow-hidden text-xs">
-          <div>抽数: {count}/10</div>
+        <div
+          className="fixed bottom-0 right-0 top-0 max-h-screen overflow-auto text-xs"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div>Made By ZTY</div>
+          <div>Version: {version}</div>
+          <div>抽数: {wish.count}</div>
+          <div>保底: {wish.max}</div>
+          <input
+            type="range"
+            min={-1}
+            max={100}
+            value={wish.max}
+            onChange={(e) => {
+              wish.setMax(parseInt(e.target.value));
+            }}
+          />
+          <div>连抽: {wish.values.length}</div>
+          <input
+            type="range"
+            min={1}
+            max={10}
+            value={wish.values.length}
+            onChange={(e) => {
+              wish.setBulk(parseInt(e.target.value));
+            }}
+          />
+          <button onClick={() => wish.reset()}>【重置概率】</button>
           <table>
             <tbody>
-              {weights
+              {wish.weights
                 .sort((a, b) => b.weight - a.weight)
                 .map((w) => (
-                  <tr key={w.value}>
+                  <tr key={w.value} className="leading-none">
                     <td className="p-1">{w.value}</td>
                     <td className="p-1">
                       {((w.weight / students.length) * 100).toPrecision(10)}%
