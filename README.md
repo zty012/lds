@@ -1,6 +1,8 @@
-# lds
+# lds 的制裁
 
 随机点名工具
+
+## lds vs randent vs twenty
 
 | 功能         | lds | randent | twenty |
 | ------------ | --- | ------- | ------ |

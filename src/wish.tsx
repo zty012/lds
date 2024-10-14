@@ -1,6 +1,11 @@
 import React from "react";
 import { choose } from "./random";
 
+/**
+ * 抽卡核心逻辑
+ * @param items 所有item的数组
+ * @param bulk 默认连抽次数
+ */
 export function useWish<T>(items: T[], bulk: number = 1) {
   const [running, setRunning] = React.useState(false);
   const [intervalId, setIntervalId] = React.useState<number>();
@@ -46,7 +51,7 @@ export function useWish<T>(items: T[], bulk: number = 1) {
     // 记录抽卡次数
     setCount(count + 1);
     // 保底机制，如果抽数是max的倍数，则设置结果为概率最低的一些item
-    if (count % max === 0) {
+    if (max >= 0 && count % max === 0) {
       // 把item按照权重从低到高排序
       const sorted = weights.sort((a, b) => a.weight - b.weight);
       // 选取权重最低的value.length个item
