@@ -50,7 +50,7 @@ export default function App() {
       </div>
       <div
         className={cn(
-          "fixed bottom-0 right-0 top-0 flex max-h-screen translate-x-full flex-col overflow-y-auto overflow-x-hidden rounded-lg bg-neutral-800/50 p-4 shadow-xl shadow-neutral-900/50 transition",
+          "fixed bottom-0 right-0 top-0 flex max-h-screen translate-x-full flex-col overflow-y-auto overflow-x-hidden rounded-lg bg-neutral-800/20 p-4 shadow-xl shadow-neutral-900/50 transition",
           {
             "translate-x-0": showSidebar,
           },
@@ -83,7 +83,7 @@ export default function App() {
         <div>背景色: ↓点击选择颜色</div>
         <input
           type="color"
-          className="h-8 w-full border border-white bg-transparent"
+          className="block h-8 w-full border border-white bg-transparent"
           value={bg}
           onChange={(e) => {
             setBg(e.target.value);
@@ -91,19 +91,19 @@ export default function App() {
         />
         <button
           onClick={() => wish.reset()}
-          className="bg-slate-800 py-1 transition hover:bg-slate-700"
+          className="bg-slate-800/10 py-1 transition hover:bg-slate-800/20"
         >
           重置权重
         </button>
         <button
           onClick={() => getCurrentWindow().setFullscreen(true)}
-          className="bg-slate-800 py-1 transition hover:bg-slate-700"
+          className="bg-slate-800/10 py-1 transition hover:bg-slate-800/20"
         >
           全屏
         </button>
         <button
           onClick={() => getCurrentWindow().setFullscreen(false)}
-          className="bg-slate-800 py-1 transition hover:bg-slate-700"
+          className="bg-slate-800/10 py-1 transition hover:bg-slate-800/20"
         >
           退出全屏
         </button>
