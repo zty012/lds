@@ -6,6 +6,18 @@ on:
   workflow_dispatch: # 手动触发
 
 jobs:
+  # 先删除掉之前的 Nightly Release
+  delete-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - run: gh release delete nightly --yes || true # 忽略错误
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # 开始构建并发布 Nightly Release
   publish-tauri:
     permissions:
       contents: write
@@ -68,15 +80,10 @@ jobs:
       - name: edit version (windows only)
         if: matrix.platform == 'windows-latest' # This must match the platform value defined above.
         run: |
-          (Get-Content src-tauri\tauri.conf.json).replace('"version": ".*"', '"version": "0.0.0-nightly.${{ github.sha }}"') | Set-Content src-tauri\tauri.conf.json
-
-      - name: Delete a Release
-        uses: liudonghua123/delete-release-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          release_name: "Nightly Build"
-          suppress_errors: true
+          $jsonContent = Get-Content -Path "src-tauri/tauri.conf.json" -Raw
+          $jsonObject = $jsonContent | ConvertFrom-Json
+          $jsonObject.version = "0.0.0-nightly.${{ github.sha }}"
+          $jsonObject | ConvertTo-Json -Depth 10 | Set-Content -Path "src-tauri/tauri.conf.json"
 
       - uses: tauri-apps/tauri-action@v0
         env:
