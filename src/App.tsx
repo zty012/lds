@@ -6,13 +6,16 @@ import cn from "./cn";
 import { useStore } from "./store";
 import { getTextColor } from "./utils";
 import {
+  Fullscreen,
   Gauge,
   Hash,
   ListOrdered,
   Palette,
   RefreshCcw,
   Verified,
+  X,
 } from "lucide-react";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 
 export default function App() {
   const [showSettings, setShowSettings] = React.useState(false);
@@ -71,8 +74,7 @@ export default function App() {
         )}
         onClick={(e) => e.stopPropagation()}
       >
-        <h1 className="text-3xl font-bold">设置 & 关于</h1>
-        <div className="grid grid-cols-2 gap-4 *:flex *:flex-col *:gap-2 *:rounded-lg *:bg-neutral-700/20 *:p-4">
+        <div className="grid grid-cols-2 gap-4 *:flex *:flex-col *:gap-2 *:rounded-lg *:bg-neutral-700/20 *:p-4 *:transition hover:*:opacity-70 active:*:scale-90">
           <div>
             <Verified />
             <p>By ZTY</p>
@@ -114,10 +116,23 @@ export default function App() {
               onChange={(e) => wish.setBulk(Number(e.target.value))}
             />
           </div>
-          <div>
+          <div onClick={() => wish.reset()}>
             <RefreshCcw />
             <p>重置权重</p>
-            <button onClick={() => wish.reset()}>确定</button>
+          </div>
+          <div
+            onClick={() =>
+              getCurrentWindow()
+                .isFullscreen()
+                .then((v) => getCurrentWindow().setFullscreen(!v))
+            }
+          >
+            <Fullscreen />
+            <p>全屏</p>
+          </div>
+          <div onClick={() => getCurrentWindow().close()}>
+            <X />
+            <p>退出</p>
           </div>
         </div>
       </div>
