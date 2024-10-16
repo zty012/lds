@@ -32,6 +32,15 @@ export function useWish<T>(items: T[], bulk: number = 1) {
     if (running) {
       return;
     }
+    // 给上次选中的学生降低50%的概率
+    for (const value of values) {
+      console.log(value);
+      setWeights(
+        weights.map((w) =>
+          w.value === value ? { ...w, weight: w.weight * 0.5 } : w,
+        ),
+      );
+    }
     setRunning(true);
     setIntervalId(
       setInterval(() => {
@@ -51,21 +60,14 @@ export function useWish<T>(items: T[], bulk: number = 1) {
     // 记录抽卡次数
     setCount(count + 1);
     // 保底机制，如果抽数是max的倍数，则设置结果为概率最低的一些item
-    if (max >= 0 && count % max === 0) {
+    if (max >= 0 && count >= max) {
+      setCount(0);
       // 把item按照权重从低到高排序
       const sorted = weights.sort((a, b) => a.weight - b.weight);
       // 选取权重最低的value.length个item
       const lowWeightItems = sorted.slice(0, values.length);
       // 设置结果
       setValues(lowWeightItems.map((s) => s.value));
-    }
-    // 给选中的学生降低50%的概率
-    for (const value of values) {
-      setWeights(
-        weights.map((w) =>
-          w.value === value ? { ...w, weight: w.weight * 0.5 } : w,
-        ),
-      );
     }
   }
   /**
@@ -104,5 +106,6 @@ export function useWish<T>(items: T[], bulk: number = 1) {
     max,
     setMax,
     reset,
+    setWeights,
   };
 }

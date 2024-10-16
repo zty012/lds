@@ -5,10 +5,17 @@ import { getVersion } from "@tauri-apps/api/app";
 import cn from "./cn";
 import { useStore } from "./store";
 import { getTextColor } from "./utils";
-import { getCurrentWindow } from "@tauri-apps/api/window";
+import {
+  Gauge,
+  Hash,
+  ListOrdered,
+  Palette,
+  RefreshCcw,
+  Verified,
+} from "lucide-react";
 
 export default function App() {
-  const [showSidebar, setShowSidebar] = React.useState(false);
+  const [showSettings, setShowSettings] = React.useState(false);
   const wish = useWish(students);
   const [version, setVersion] = React.useState("");
   const [bg, setBg] = useStore("bg", "#000000");
@@ -18,7 +25,7 @@ export default function App() {
     const handleKeyDown = (event: KeyboardEvent) => {
       console.log(event.key);
       if (event.key === "Delete") {
-        setShowSidebar((v) => !v);
+        setShowSettings((v) => !v);
       }
     };
     document.addEventListener("keydown", handleKeyDown);
@@ -43,80 +50,115 @@ export default function App() {
         }
       }}
     >
-      <div className="container flex flex-wrap items-center justify-center gap-8 overflow-hidden text-center text-7xl font-bold">
+      <div
+        className={cn(
+          "container flex flex-wrap items-center justify-center gap-8 overflow-hidden text-center text-7xl font-bold opacity-90 transition duration-300",
+          {
+            "scale-90": wish.running,
+          },
+        )}
+      >
         {wish.values.map((v, i) => (
           <span key={i}>{v}</span>
         ))}
       </div>
       <div
         className={cn(
-          "fixed bottom-0 right-0 top-0 flex max-h-screen translate-x-full flex-col overflow-y-auto overflow-x-hidden rounded-lg bg-neutral-800/20 p-4 shadow-xl shadow-neutral-900/50 transition",
+          "fixed right-0 top-0 z-10 m-8 flex origin-top-right scale-90 flex-col gap-4 rounded-xl bg-black/20 p-8 text-white opacity-0 shadow-xl shadow-black/10 transition",
           {
-            "translate-x-0": showSidebar,
+            "scale-100 opacity-100": showSettings,
           },
         )}
         onClick={(e) => e.stopPropagation()}
       >
-        <div>Made By ZTY</div>
-        <div>Version: {version}</div>
-        <div>抽数: {wish.count}</div>
-        <div>保底(-1=禁用保底): {wish.max}</div>
-        <input
-          type="range"
-          min={-1}
-          max={50}
-          value={wish.max}
-          onChange={(e) => {
-            wish.setMax(parseInt(e.target.value));
-          }}
-        />
-        <div>连抽: {wish.values.length}</div>
-        <input
-          type="range"
-          min={1}
-          max={50}
-          value={wish.values.length}
-          onChange={(e) => {
-            wish.setBulk(parseInt(e.target.value));
-          }}
-        />
-        <div>背景色: ↓点击选择颜色</div>
-        <input
-          type="color"
-          className="block h-8 w-full border border-white bg-transparent"
-          value={bg}
-          onChange={(e) => {
-            setBg(e.target.value);
-          }}
-        />
-        <button
-          onClick={() => wish.reset()}
-          className="bg-slate-800/10 py-1 transition hover:bg-slate-800/20"
-        >
-          重置权重
-        </button>
-        <button
-          onClick={() => getCurrentWindow().setFullscreen(true)}
-          className="bg-slate-800/10 py-1 transition hover:bg-slate-800/20"
-        >
-          全屏
-        </button>
-        <button
-          onClick={() => getCurrentWindow().setFullscreen(false)}
-          className="bg-slate-800/10 py-1 transition hover:bg-slate-800/20"
-        >
-          退出全屏
-        </button>
-        <div>权重:</div>
-        <table className="text-xs">
+        <h1 className="text-3xl font-bold">设置 & 关于</h1>
+        <div className="grid grid-cols-2 gap-4 *:flex *:flex-col *:gap-2 *:rounded-lg *:bg-neutral-700/20 *:p-4">
+          <div>
+            <Verified />
+            <p>By ZTY</p>
+          </div>
+          <div>
+            <Hash />
+            <p>{version}</p>
+          </div>
+          <div>
+            <Palette />
+            <p>背景颜色: {bg}</p>
+            <input
+              type="color"
+              value={bg}
+              onChange={(e) => setBg(e.target.value)}
+            />
+          </div>
+          <div>
+            <Gauge />
+            <p>
+              抽数: {wish.count} / {wish.max}
+            </p>
+            <input
+              type="range"
+              min="-1"
+              max="50"
+              value={wish.max}
+              onChange={(e) => wish.setMax(Number(e.target.value))}
+            />
+          </div>
+          <div>
+            <ListOrdered />
+            <p>连抽: {wish.values.length}</p>
+            <input
+              type="range"
+              min="1"
+              max="50"
+              value={wish.values.length}
+              onChange={(e) => wish.setBulk(Number(e.target.value))}
+            />
+          </div>
+          <div>
+            <RefreshCcw />
+            <p>重置权重</p>
+            <button onClick={() => wish.reset()}>确定</button>
+          </div>
+        </div>
+      </div>
+      <div
+        className={cn(
+          "fixed left-0 top-0 z-10 m-8 flex max-h-full origin-top-left scale-90 flex-col gap-4 overflow-auto rounded-xl bg-black/20 p-8 text-xs text-white opacity-0 shadow-xl shadow-black/10 transition",
+          {
+            "scale-100 opacity-100": showSettings,
+          },
+        )}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <table>
+          <thead>
+            <tr>
+              <th>姓名</th>
+              <th>权重</th>
+            </tr>
+          </thead>
           <tbody>
             {wish.weights
-              .sort((a, b) => b.weight - a.weight)
-              .map((w) => (
-                <tr key={w.value} className="leading-none">
-                  <td className="p-1">{w.value}</td>
-                  <td className="p-1">
-                    {((w.weight / students.length) * 100).toPrecision(10)}%
+              .sort((a, b) => a.value.localeCompare(b.value))
+              .map((s) => (
+                <tr key={s.value}>
+                  <td>{s.value}</td>
+                  <td>{s.weight}</td>
+                  <td>
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.01"
+                      value={s.weight}
+                      onChange={(e) =>
+                        wish.setWeights((weights) => [
+                          ...weights.filter((w) => w.value !== s.value),
+                          { value: s.value, weight: Number(e.target.value) },
+                        ])
+                      }
+                      className="h-2 w-32"
+                    />
                   </td>
                 </tr>
               ))}

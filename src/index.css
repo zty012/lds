@@ -2,9 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "LXGW WenKai";
+  src: url("assets/lxgw.woff2") format("woff2");
+}
+
 @layer base {
   * {
     @apply cursor-default;
+    font-family: "LXGW WenKai", sans-serif;
   }
   ::-webkit-scrollbar {
     width: 4px;

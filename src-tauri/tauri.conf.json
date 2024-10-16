@@ -14,7 +14,9 @@
       {
         "title": "lds的制裁",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "decorations": false,
+        "dragDropEnabled": true
       }
     ],
     "security": {
