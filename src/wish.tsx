@@ -32,15 +32,6 @@ export function useWish<T>(items: T[], bulk: number = 1) {
     if (running) {
       return;
     }
-    // 给上次选中的学生降低50%的概率
-    for (const value of values) {
-      console.log(value);
-      setWeights(
-        weights.map((w) =>
-          w.value === value ? { ...w, weight: w.weight * 0.5 } : w,
-        ),
-      );
-    }
     setRunning(true);
     setIntervalId(
       setInterval(() => {
@@ -69,13 +60,23 @@ export function useWish<T>(items: T[], bulk: number = 1) {
       // 设置结果
       setValues(lowWeightItems.map((s) => s.value));
     }
+    // 给上次选中的学生降低50%的概率
+    for (const value of values) {
+      console.log(value);
+      setWeights((prev) =>
+        prev.map((w) =>
+          w.value === value ? { ...w, weight: w.weight * 0.5 } : w,
+        ),
+      );
+    }
   }
   /**
-   * 抽取一个item，不会修改权重
+   * 抽取一个item，不会保底或修改权重
    * @returns 选中的item
    */
   function pick() {
-    return choose(weights);
+    const value = choose(weights);
+    return value;
   }
   /**
    * 重置概率

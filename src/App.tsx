@@ -10,6 +10,8 @@ import {
   Gauge,
   Hash,
   ListOrdered,
+  Maximize,
+  Move,
   Palette,
   RefreshCcw,
   Verified,
@@ -54,6 +56,10 @@ export default function App() {
       }}
     >
       <div
+        className="fixed left-0 right-0 top-0 z-10 h-12 transition hover:bg-neutral-700/20"
+        data-tauri-drag-region
+      ></div>
+      <div
         className={cn(
           "container flex flex-wrap items-center justify-center gap-8 overflow-hidden text-center text-7xl font-bold opacity-90 transition duration-300",
           {
@@ -67,9 +73,9 @@ export default function App() {
       </div>
       <div
         className={cn(
-          "fixed right-0 top-0 z-10 m-8 flex origin-top-right scale-90 flex-col gap-4 rounded-xl bg-black/20 p-8 text-white opacity-0 shadow-xl shadow-black/10 transition",
+          "pointer-events-none fixed right-0 top-0 z-20 m-8 flex origin-top-right scale-90 flex-col gap-4 rounded-xl bg-black/20 p-8 text-white opacity-0 shadow-xl shadow-black/10 transition",
           {
-            "scale-100 opacity-100": showSettings,
+            "pointer-events-auto scale-100 opacity-100": showSettings,
           },
         )}
         onClick={(e) => e.stopPropagation()}
@@ -130,6 +136,14 @@ export default function App() {
             <Fullscreen />
             <p>全屏</p>
           </div>
+          <div onClick={() => getCurrentWindow().toggleMaximize()}>
+            <Maximize />
+            <p>最大化</p>
+          </div>
+          <div data-tauri-drag-region>
+            <Move />
+            <p>移动窗口</p>
+          </div>
           <div onClick={() => getCurrentWindow().close()}>
             <X />
             <p>退出</p>
@@ -138,9 +152,9 @@ export default function App() {
       </div>
       <div
         className={cn(
-          "fixed left-0 top-0 z-10 m-8 flex max-h-full origin-top-left scale-90 flex-col gap-4 overflow-auto rounded-xl bg-black/20 p-8 text-xs text-white opacity-0 shadow-xl shadow-black/10 transition",
+          "pointer-events-none fixed left-0 top-0 z-20 m-8 flex max-h-full origin-top-left scale-90 flex-col gap-4 overflow-auto rounded-xl bg-black/20 p-8 text-xs text-white opacity-0 shadow-xl shadow-black/10 transition",
           {
-            "scale-100 opacity-100": showSettings,
+            "pointer-events-auto scale-100 opacity-100": showSettings,
           },
         )}
         onClick={(e) => e.stopPropagation()}
