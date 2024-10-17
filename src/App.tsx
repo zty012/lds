@@ -23,6 +23,7 @@ export default function App() {
   const wish = useWish(students);
   const [version, setVersion] = React.useState("");
   const [bg, setBg] = useStore("bg", "#000000");
+  const [tc, setTc] = useStore("tc", "#FFFFFF");
 
   React.useEffect(() => {
     getVersion().then((v) => setVersion(v));
@@ -48,7 +49,7 @@ export default function App() {
       className="flex h-screen select-none flex-col items-center justify-center overflow-hidden transition"
       style={{
         backgroundColor: bg,
-        color: getTextColor(bg),
+        color: tc,
       }}
       onClick={() => {
         if (wish.running) {
@@ -98,7 +99,19 @@ export default function App() {
             <input
               type="color"
               value={bg}
-              onChange={(e) => setBg(e.target.value)}
+              onChange={(e) => {
+                setBg(e.target.value);
+                setTc(getTextColor(e.target.value));
+              }}
+            />
+          </div>
+          <div>
+            <Palette />
+            <p>文字颜色: {tc}</p>
+            <input
+              type="color"
+              value={tc}
+              onChange={(e) => setTc(e.target.value)}
             />
           </div>
           <div>
@@ -127,7 +140,7 @@ export default function App() {
           </div>
           <div onClick={() => wish.reset()}>
             <RefreshCcw />
-            <p>重置权重</p>
+            <p>重置</p>
           </div>
           <div
             onClick={() =>

@@ -85,10 +85,11 @@ export function useWish<T>(items: T[], bulk: number = 1) {
     return value;
   }
   /**
-   * 重置概率
+   * 重置
    */
   function reset() {
     setWeights(items.map((s) => ({ value: s, weight: 1 })));
+    setCount(0);
   }
   /**
    * 设置连抽次数
