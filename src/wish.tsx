@@ -50,6 +50,9 @@ export function useWish<T>(items: T[], bulk: number = 1) {
     setRunning(false);
     // 记录抽卡次数
     setCount(count + 1);
+
+    let vs = values;
+
     // 保底机制，如果抽数是max的倍数，则设置结果为概率最低的一些item
     if (max >= 0 && count >= max) {
       setCount(0);
@@ -58,10 +61,11 @@ export function useWish<T>(items: T[], bulk: number = 1) {
       // 选取权重最低的value.length个item
       const lowWeightItems = sorted.slice(0, values.length);
       // 设置结果
-      setValues(lowWeightItems.map((s) => s.value));
+      vs = lowWeightItems.map((w) => w.value);
     }
+
     // 给上次选中的学生降低50%的概率
-    for (const value of values) {
+    for (const value of vs) {
       console.log(value);
       setWeights((prev) =>
         prev.map((w) =>
@@ -69,6 +73,8 @@ export function useWish<T>(items: T[], bulk: number = 1) {
         ),
       );
     }
+
+    setValues(vs);
   }
   /**
    * 抽取一个item，不会保底或修改权重

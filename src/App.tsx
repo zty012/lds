@@ -10,8 +10,6 @@ import {
   Gauge,
   Hash,
   ListOrdered,
-  Maximize,
-  Move,
   Palette,
   RefreshCcw,
   Verified,
