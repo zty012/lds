@@ -6,29 +6,30 @@ import { choose } from "./random";
  * @param items 所有item的数组
  * @param bulk 默认连抽次数
  */
-export function useWish<T>(items: T[], bulk: number = 1) {
+export function useWish<T>(items: T[] = [], bulk: number = 1) {
   const [running, setRunning] = React.useState(false);
   const [intervalId, setIntervalId] = React.useState<number>();
   /** 每个item的权重 */
-  const [weights, setWeights] = React.useState(
+  const [weights, setWeights] = React.useState<{ value: T; weight: number }[]>(
     items.map((s) => ({ value: s, weight: 1 })),
   );
   /** 选中的item */
-  const [values, setValues] = React.useState<T[]>([]);
+  const [values, setValues] = React.useState<T[]>(
+    Array(bulk)
+      .fill(null)
+      .map(() => pick()),
+  );
   /** 抽卡次数 */
   const [count, setCount] = React.useState(0);
   /** 抽x次触发保底机制 */
   const [max, setMax] = React.useState(15);
-
-  React.useEffect(() => {
-    setBulk(bulk);
-  }, [bulk]);
 
   /**
    * 开始抽卡
    * @param interval 更新间隔
    */
   function start(interval: number = 1) {
+    console.log("start");
     if (running) {
       return;
     }
@@ -43,6 +44,7 @@ export function useWish<T>(items: T[], bulk: number = 1) {
    * 停止抽卡
    */
   function stop() {
+    console.log("stop");
     if (!intervalId) {
       return;
     }
@@ -88,7 +90,7 @@ export function useWish<T>(items: T[], bulk: number = 1) {
    * 重置
    */
   function reset() {
-    setWeights(items.map((s) => ({ value: s, weight: 1 })));
+    setWeights((v) => v.map((w) => ({ ...w, weight: 1 })));
     setCount(0);
   }
   /**
@@ -101,6 +103,14 @@ export function useWish<T>(items: T[], bulk: number = 1) {
         .fill(null)
         .map(() => pick()),
     );
+  }
+  /**
+   * 设置所有item
+   * @param items 所有item的数组
+   */
+  function setItems(items: T[]) {
+    setWeights(items.map((s) => ({ value: s, weight: 1 })));
+    reset();
   }
 
   return {
@@ -115,5 +125,6 @@ export function useWish<T>(items: T[], bulk: number = 1) {
     setMax,
     reset,
     setWeights,
+    setItems,
   };
 }
