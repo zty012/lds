@@ -20,6 +20,7 @@ import {
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
 export default function App() {
+  const [showWeights, setShowWeights] = React.useState(false);
   const [showSettings, setShowSettings] = React.useState(false);
   const wish = useWish(students);
   const [version, setVersion] = React.useState("");
@@ -28,7 +29,11 @@ export default function App() {
   React.useEffect(() => {
     getVersion().then((v) => setVersion(v));
     const handleKeyDown = (event: KeyboardEvent) => {
-      console.log(event.key);
+      // Insert显示权重
+      if (event.key === "Insert") {
+        setShowWeights((v) => !v);
+      }
+      // Delete显示设置面板
       if (event.key === "Delete") {
         setShowSettings((v) => !v);
       }
@@ -136,14 +141,6 @@ export default function App() {
             <Fullscreen />
             <p>全屏</p>
           </div>
-          <div onClick={() => getCurrentWindow().toggleMaximize()}>
-            <Maximize />
-            <p>最大化</p>
-          </div>
-          <div data-tauri-drag-region>
-            <Move />
-            <p>移动窗口</p>
-          </div>
           <div onClick={() => getCurrentWindow().close()}>
             <X />
             <p>退出</p>
@@ -154,7 +151,7 @@ export default function App() {
         className={cn(
           "pointer-events-none fixed left-0 top-0 z-20 m-8 flex max-h-full origin-top-left scale-90 flex-col gap-4 overflow-auto rounded-xl bg-black/20 p-8 text-xs text-white opacity-0 shadow-xl shadow-black/10 transition",
           {
-            "pointer-events-auto scale-100 opacity-100": showSettings,
+            "pointer-events-auto scale-100 opacity-100": showWeights,
           },
         )}
         onClick={(e) => e.stopPropagation()}
