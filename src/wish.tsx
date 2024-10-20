@@ -58,12 +58,23 @@ export function useWish<T>(items: T[] = [], bulk: number = 1) {
     // 保底机制，如果抽数是max的倍数，则设置结果为概率最低的一些item
     if (max >= 0 && count >= max) {
       setCount(0);
-      // 把item按照权重从低到高排序
-      const sorted = weights.sort((a, b) => a.weight - b.weight);
-      // 选取权重最低的value.length个item
-      const lowWeightItems = sorted.slice(0, values.length);
+      // lds:这样不行，第一次保底会抽到一个倒霉蛋，后面的保底都会抽到那个倒霉蛋
+      // // 把item按照权重从低到高排序
+      // const sorted = weights.sort((a, b) => a.weight - b.weight);
+      // // 选取权重最低的value.length个item
+      // const lowWeightItems = sorted.slice(0, values.length);
+      // // 设置结果
+      // vs = lowWeightItems.map((w) => w.value);
+      // 找到所有权重!==1的item，从大到小排序
+      const lowWeightItems = weights
+        .filter((w) => w.weight !== 1)
+        .sort((a, b) => b.weight - a.weight);
+      // 选取最大权重的item.length个item
+      const shuffled = lowWeightItems.slice(0, values.length);
+      // 打乱顺序
+      shuffled.sort(() => Math.random() - 0.5);
       // 设置结果
-      vs = lowWeightItems.map((w) => w.value);
+      vs = shuffled.map((w) => w.value);
     }
 
     // 给上次选中的学生降低50%的概率

@@ -153,35 +153,9 @@ export default function App() {
             <Fullscreen />
             <p>全屏</p>
           </div>
-          <div
-            onDragEnter={(e) => e.preventDefault()}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => {
-              e.preventDefault();
-              const files = e.dataTransfer.files;
-              if (files.length > 0) {
-                const file = files[0];
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                  const data = e.target?.result;
-                  if (typeof data !== "string") return;
-                  if (data.startsWith("[")) {
-                    const json = JSON.parse(data);
-                    if (Array.isArray(json)) {
-                      wish.setItems(json);
-                    }
-                  } else {
-                    const lines = data.split("\n");
-                    const items = lines.filter((l) => l.trim() !== "");
-                    wish.setItems(items);
-                  }
-                };
-                reader.readAsText(file);
-              }
-            }}
-          >
+          <div>
             <List />
-            <p>拖拽json或txt到此处可导入</p>
+            <p>模式</p>
             <button onClick={() => wish.setItems(yb18)}>预备18班</button>
             <button
               onClick={() =>
