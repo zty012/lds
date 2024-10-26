@@ -117,27 +117,43 @@ export default function App() {
           </div>
           <div>
             <Gauge />
-            <p>
-              抽数: {wish.count} / {wish.max}
-            </p>
-            <input
-              type="range"
-              min="-1"
-              max="50"
-              value={wish.max}
-              onChange={(e) => wish.setMax(Number(e.target.value))}
-            />
+            <p>抽数: {wish.count} / 保底:</p>
+            <div className="flex items-center gap-2">
+              <input
+                type="range"
+                min="-1"
+                max="50"
+                value={wish.max}
+                onChange={(e) => wish.setMax(Number(e.target.value))}
+              />
+              <input
+                type="text"
+                pattern="[0-9]+"
+                value={wish.max}
+                onChange={(e) => wish.setMax(Number(e.target.value))}
+                className="w-12 rounded-full border border-white bg-transparent px-2 py-1"
+              />
+            </div>
           </div>
           <div>
             <ListOrdered />
-            <p>连抽: {wish.values.length}</p>
-            <input
-              type="range"
-              min="1"
-              max="50"
-              value={wish.values.length}
-              onChange={(e) => wish.setBulk(Number(e.target.value))}
-            />
+            <p>连抽</p>
+            <div className="flex items-center gap-2">
+              <input
+                type="range"
+                min="1"
+                max="50"
+                value={wish.values.length}
+                onChange={(e) => wish.setBulk(Number(e.target.value))}
+              />
+              <input
+                type="text"
+                pattern="[0-9]+"
+                value={wish.values.length}
+                onChange={(e) => wish.setBulk(Number(e.target.value))}
+                className="w-12 rounded-full border border-white bg-transparent px-2 py-1"
+              />
+            </div>
           </div>
           <div onClick={() => wish.reset()}>
             <RefreshCcw />
